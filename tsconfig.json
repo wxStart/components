@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "outDir": "dist",
+    "module": "ESNext",
+    "target": "ESNext",
+    "moduleResolution": "Node",
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "strict": true,
+    "jsx": "preserve",
+    "sourceMap": false,
+    "baseUrl": ".",
+    "allowJs": true,
+    "paths": {
+      "@/*": ["src/*"]
+    },
+    "types": ["vite/client","node"]
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.d.ts"
+  ],
+  "exclude": ["vite.config.ts", "node_modules", "dist", "**/*.js"]
+}
