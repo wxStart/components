@@ -18,8 +18,8 @@
 import { ElButton } from 'element-plus'
 import WaterfallFlow from '@wx/waterfall-flow-vue3'
 import { ref } from 'vue'
-import { dataLists } from './mockData'
-console.log('dataLists: 1111', dataLists)
+import { dataLists } from './mock'
+
 defineOptions({
   name: 'WaterfallFlowPage',
 })
