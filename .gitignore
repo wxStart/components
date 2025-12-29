@@ -32,5 +32,4 @@ coverage
 /central-warehouse-project
 /.version.json
 *.zip
-/packages
 /public/version.json
