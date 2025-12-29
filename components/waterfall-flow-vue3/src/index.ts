@@ -1,4 +1,4 @@
-import WaterfallFlow from "./WaterfallFlow.vue";
+import WaterfallFlow from "./components/WaterfallFlow.vue";
 
 export { WaterfallFlow };
 

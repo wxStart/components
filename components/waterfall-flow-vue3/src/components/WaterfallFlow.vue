@@ -18,8 +18,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, getCurrentInstance, nextTick } from "vue";
+import { ref, watch, onMounted, onUnmounted, nextTick } from "vue";
 import WaterfallFlow from "@wx/waterfall-flow-core";
+import { debounce } from "@wx/shared";
 
 const props = defineProps({
   itemKey: {
@@ -70,7 +71,6 @@ const renderWaterfallFlow = async () => {
 
     getContainerWidth: async () => {
       const items = await querySelectAll(`#${waterfallFlowId.value}`);
-      console.log("items: ", items[0]);
       //@ts-ignore
       const width = items?.[0]?.offsetWidth as number;
       return width;
@@ -80,10 +80,13 @@ const renderWaterfallFlow = async () => {
         ".waterfall-item",
         `#${waterfallFlowId.value}`
       );
-      const result = items.reduce((pre: Record<string, number>, cur: any) => {
-        pre[cur.dataset.id] = cur.offsetHeight;
-        return pre;
-      }, {});
+      const result = {};
+      for (let index = 0; index < items.length; index++) {
+        const element = items[index];
+        //@ts-ignore
+        result[element.dataset.id] = element.offsetHeight;
+      }
+
       return result;
     },
   });
@@ -91,20 +94,25 @@ const renderWaterfallFlow = async () => {
   // 先把滚动条渲染出 等宽度确定好了再去渲染items，否则导致item的位置计算错误 left 会计算错误
   containerHeight.value = height;
   await nextTick();
-  const { items, height: finalHeight } = await waterfallFlow.render();
-  console.log("items: 111", items);
+  const { itemMapHeight, height: finalHeight } = await waterfallFlow.render();
+  console.log("itemMapHeight: 1111111", itemMapHeight);
 
   containerHeight.value = finalHeight;
 
-  // 更新位置映射
-  items.forEach((item) => {
-    renderItemsTopLeftMap.value[item.id] = {
-      top: `${item.top}px`,
-      left: `${item.left}px`,
+  const renderItemsTopLeftMapLocal: Record<
+    string,
+    { top: string; left: string; position: string; transition: any }
+  > = {};
+  Object.keys(itemMapHeight).forEach((key) => {
+    renderItemsTopLeftMapLocal[key] = {
+      top: `${itemMapHeight[key].top}px`,
+      left: `${itemMapHeight[key].left}px`,
       position: "absolute",
       transition: "all 0.3s ease-in-out",
     };
   });
+  // 更新位置映射
+  renderItemsTopLeftMap.value = renderItemsTopLeftMapLocal;
 };
 
 // 监听props变化
@@ -123,6 +131,15 @@ watch([() => props.column, () => props.gutter], () => {
 });
 
 onMounted(renderWaterfallFlow);
+
+const onResize = debounce(renderWaterfallFlow, 300);
+
+onMounted(() => {
+  window.addEventListener("resize", onResize);
+});
+onUnmounted(() => {
+  window.removeEventListener("resize", onResize);
+});
 </script>
 
 <style lang="scss" scoped>

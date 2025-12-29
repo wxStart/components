@@ -1,9 +1,10 @@
 <template>
-  <el-menu :class="$style.menu" :collapse="true">
+  <el-menu :class="$style.menu">
     <SubMenu
       v-for="menuItem in menuList as MenuItem[]"
       :key="menuItem.path || menuItem.id"
       :menuItem="menuItem"
+      v-bind="$attrs"
     />
   </el-menu>
 </template>
@@ -19,6 +20,9 @@ interface MenuItem {
 // import { useRoute } from 'vue-router'
 import SubMenu from './SubMenu.vue'
 
+defineOptions({
+  name: 'MenuNav',
+})
 defineProps({
   menuList: {
     type: Array,

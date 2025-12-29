@@ -18,7 +18,7 @@ class WaterfallFlow {
       left: number;
     };
   } = {};
-  itemKey: string;
+  itemKey: string; // 用于标识每一项的唯一 key
 
   getItemsHeightMap: () => Promise<{ [key: string]: number }>;
 
@@ -55,7 +55,12 @@ class WaterfallFlow {
   }
   async render() {
     await this.initColumnInfo();
-    const renderItemData = [];
+    const renderItemData: {
+      id: string;
+      columnIndex: number;
+      left: number;
+      top: number;
+    }[] = [];
     const itemsHeightMap = await this.getItemsHeightMap();
     for (let index = 0; index < this.items.length; index++) {
       const item = this.items[index];
@@ -63,7 +68,6 @@ class WaterfallFlow {
       let currentColumnIndex = 0;
       // zh-CN: 找到高度最小的列
       let i = 1;
-
       while (i <= this.column) {
         const currentHeight = this.columnInfo[i]?.height;
         const preHeight = this.columnInfo[currentColumnIndex]?.height;
@@ -88,7 +92,16 @@ class WaterfallFlow {
       ...Object.values(this.columnInfo).map((item) => item.height)
     );
     return {
-      items: renderItemData,
+      itemMapHeight: renderItemData.reduce(
+        (pre, cur: (typeof renderItemData)[0]) => {
+          pre[cur.id] = {
+            left: cur.left,
+            top: cur.top,
+          }
+          return pre;
+        },
+        {} as Record<string, { left: number; top: number; }>
+      ),
       height: containerHeight,
     };
   }

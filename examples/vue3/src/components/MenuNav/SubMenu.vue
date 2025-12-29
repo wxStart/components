@@ -1,28 +1,28 @@
 <template>
   <el-sub-menu v-if="isSubMenu" :index="menuItem.id" :disabled="menuItem.disabled">
     <template #title>
-      <span :class="`icon meihao-zhongtai ${icon} ${$style.icon}`"></span>
-      <span>{{ $t(`router.${menuItem.name}`, menuItem.title) }}</span>
+      <!-- <span :class="`icon meihao-zhongtai ${icon} ${$style.icon}`"></span> -->
+      <span>{{ menuItem.title }}</span>
     </template>
-    <SubMenu v-for="item in children" :key="item.id" :menuItem="item" />
+    <SubMenu v-for="item in children" :key="item.id" :menuItem="item" v-bind="$attrs" />
   </el-sub-menu>
   <el-menu-item v-else :index="menuItem.id" :disabled="menuItem.disabled" @click="handleClick">
     <template #title>
-      <span :class="`icon meihao-zhongtai ${icon} ${$style.icon}`"></span>
-      <span>{{ $t(`router.${menuItem.name}`, menuItem.title) }}</span>
+      <!-- <span :class="`icon meihao-zhongtai ${icon} ${$style.icon}`"></span> -->
+      <span>{{ menuItem.title }}</span>
     </template>
   </el-menu-item>
 </template>
 
-<script>
-export default {
-  name: 'SubMenu',
-}
-</script>
 <script setup lang="ts">
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-const router = useRouter()
+
+defineOptions({
+  name: 'SubMenu',
+})
+
+const $emit = defineEmits(['click'])
+
 const props = defineProps({
   menuItem: {
     type: Object,
@@ -32,9 +32,9 @@ const props = defineProps({
 const menuItem = computed(() => {
   return props.menuItem
 })
-const icon = computed(() => {
-  return menuItem.value.icon
-})
+// const icon = computed(() => {
+//   return menuItem.value.icon
+// })
 const isSubMenu = computed(() => {
   return menuItem.value.children && menuItem.value.children.length
 })
@@ -43,10 +43,7 @@ const children = computed(() => {
 })
 
 function handleClick() {
-  console.log('handleClick', menuItem.value)
-  router.push({
-    path: menuItem.value.fullPath,
-  })
+  $emit('click', menuItem.value)
 }
 </script>
 
